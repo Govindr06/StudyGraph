@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyGraph Planner Tools</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="tools-page">
+    <header class="tools-masthead">
+        <a class="back-link" href="/">Back to StudyGraph</a>
+        <div>
+            <p class="eyebrow">Planner Workspace</p>
+            <h1>Study Tools & Weekly Calendar</h1>
+            <p class="lede">A focused room for your scratchpad, timer, and weekly study rhythm.</p>
+        </div>
+        <div class="theme-switcher" role="group" aria-label="Theme switcher">
+            <button id="light-theme" class="theme-toggle is-active" type="button" data-theme="light">Light</button>
+            <button id="dark-theme" class="theme-toggle" type="button" data-theme="dark">Dark</button>
+        </div>
+    </header>
+
+    <main class="tools-workspace">
+        <section class="panel utility-shell utility-shell-top">
+            <div class="utility-shell-bar">
+                <div>
+                    <p class="utility-kicker">Quick Access</p>
+                    <h2>Study Tools</h2>
+                    <p class="utility-subcopy">Switch between your scratchpad and focus timer without leaving the planner.</p>
+                </div>
+                <span class="chip">Utility</span>
+            </div>
+            <div class="utility-tabs">
+                <button class="utility-tab is-active" type="button" data-utility-target="tasks-panel">Tasks</button>
+                <button class="utility-tab" type="button" data-utility-target="timer-panel">Timer</button>
+            </div>
+
+            <section id="tasks-panel" class="utility-panel is-active">
+                <div class="utility-panel-head">
+                    <h3>AI Assistant Tasks</h3>
+                    <span class="chip">Local</span>
+                </div>
+                <div class="task-input">
+                    <input type="text" id="new-task" placeholder="Type your task here...">
+                    <button id="add-task" class="button secondary" type="button">Add</button>
+                </div>
+                <ul id="task-list" class="task-list"></ul>
+            </section>
+
+            <section id="timer-panel" class="utility-panel timer-panel">
+                <div class="utility-panel-head">
+                    <h3>Study Timer</h3>
+                    <span class="chip accent">Focus</span>
+                </div>
+                <div id="timer-display" class="timer-display">00:00:00</div>
+                <div class="timer-actions">
+                    <button id="start-timer" class="button primary" type="button">Start</button>
+                    <button id="stop-timer" class="button secondary" type="button" disabled>Stop</button>
+                    <button id="reset-timer" class="button ghost" type="button" disabled>Reset</button>
+                </div>
+            </section>
+        </section>
+
+        <section class="panel planner-panel">
+            <div class="panel-head">
+                <h2>Weekly Study Calendar</h2>
+                <span class="chip accent">Planner</span>
+            </div>
+            <div class="planner-subject-bar">
+                <div class="planner-subject-copy">
+                    <p class="planner-subject-label">Add Subject</p>
+                    <p class="planner-subject-help">Add one more subject to the weekly planner.</p>
+                </div>
+                <div class="planner-subject-actions">
+                    <input id="extra-subject" type="text" maxlength="32" placeholder="Example: DBMS">
+                    <button id="add-subject" class="button ghost" type="button">Add Subject</button>
+                    <button id="clear-subject" class="mini-button" type="button">Clear</button>
+                </div>
+            </div>
+            <div id="subject-feedback" class="planner-inline-feedback empty-state">Using the default four subjects.</div>
+            <div id="reward-message" class="reward hidden"></div>
+            <div id="calendar" class="calendar-grid"></div>
+        </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

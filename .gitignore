@@ -1,0 +1,14 @@
+# Security & Environments
+.env
+venv/
+
+# Python Cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Database
+*.sql
+
+# Media & Demos
+*.mp4

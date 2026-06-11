@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyGraph</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header class="masthead">
+        <div class="masthead-copy">
+            <p class="eyebrow">StudyGraph</p>
+            <h1><span class="icon">📖</span> Autonomous Learning Planner <span class="icon">🧠</span></h1>
+            <p class="lede">
+                AI planning, local PostgreSQL storage, Google Calendar sync, and a personal study workspace in one place.
+            </p>
+        </div>
+        <div class="theme-switcher" role="group" aria-label="Theme switcher">
+            <button id="light-theme" class="theme-toggle is-active" type="button" data-theme="light">Light</button>
+            <button id="dark-theme" class="theme-toggle" type="button" data-theme="dark">Dark</button>
+        </div>
+    </header>
+
+    <main class="dashboard">
+        <aside class="left-rail">
+            <section class="panel">
+                <div class="panel-head">
+                    <h2>Workspace Control</h2>
+                    <span class="chip">Live</span>
+                </div>
+                <div id="auth-status" class="status neutral">Checking session...</div>
+                <a class="button primary" href="/auth/google">Login with Google</a>
+                <form id="email-form" class="stack compact">
+                    <label for="email">Account Email</label>
+                    <input id="email" name="email" type="email" placeholder="you@example.com">
+                    <button id="save-email-button" class="button secondary" type="submit">Save Email</button>
+                </form>
+                <div id="email-feedback" class="planner-inline-feedback empty-state">Email not saved in this session yet.</div>
+            </section>
+
+            <section class="panel">
+                <div class="panel-head">
+                    <h2>Motivational Quote</h2>
+                    <button id="new-quote" class="mini-button" type="button">Refresh</button>
+                </div>
+                <blockquote id="motivational-quote"></blockquote>
+            </section>
+        </aside>
+
+        <section class="center-stage">
+            <section class="panel ai-planner-hero">
+                <div class="ai-planner-copy">
+                    <p class="eyebrow">Main Planner</p>
+                    <h2>AI Planner</h2>
+                    <p>Give StudyGraph a small planner brief. It builds the syllabus first, schedules around rest days, then generates lessons in your chosen style when you need them.</p>
+                </div>
+                <form id="goal-form" class="ai-planner-form">
+                    <div class="planner-field-grid">
+                        <label class="planner-field">
+                            <span>1. Topic name</span>
+                            <input id="topic" name="topic" type="text" value="Oracle SQL" placeholder="Example: Oracle SQL">
+                        </label>
+                        <label class="planner-field">
+                            <span>2. Learn in how many days?</span>
+                            <input id="duration-days" name="duration_days" type="number" min="1" max="30" value="14" placeholder="Example: 14">
+                        </label>
+                        <label class="planner-field">
+                            <span>3. Focus on anything specific?</span>
+                            <input id="focus-topic" name="focus_topic" type="text" placeholder="Example: joins, subqueries, interview practice">
+                        </label>
+                        <label class="planner-field">
+                            <span>4. Extra rest days</span>
+                            <input id="rest-days" name="rest_days" type="text" placeholder="Example: Friday, 2026-04-15">
+                        </label>
+                        <label class="planner-field planner-field-wide">
+                            <span>5. Usual study time</span>
+                            <input id="study-time" name="study_time" type="text" value="7:00 PM" placeholder="Example: 7:30 PM or 19:30">
+                        </label>
+                    </div>
+                    <div class="ai-planner-actions">
+                        <button class="button primary" type="submit">Generate, Schedule, and Save</button>
+                        <button id="push-calendar" class="button ghost" type="button">Push Unsynced Events</button>
+                    </div>
+                </form>
+                <span class="chip ai-planner-chip">Groq</span>
+            </section>
+
+            <section class="panel schedule-panel">
+                <div class="panel-head">
+                    <h2>Generated Schedule</h2>
+                    <span class="chip">Database</span>
+                </div>
+                <div id="feedback" class="status neutral">Ready.</div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Day</th>
+                                <th>Title</th>
+                                <th>Date</th>
+                                <th>Start</th>
+                                <th>End</th>
+                                <th>Lesson</th>
+                                <th>Calendar</th>
+                            </tr>
+                        </thead>
+                        <tbody id="schedule-body">
+                            <tr>
+                                <td colspan="7" class="empty">No schedule loaded yet.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="panel lesson-panel">
+                <div class="panel-head">
+                    <h2>Generate Current Lesson</h2>
+                    <span class="chip accent">On Demand</span>
+                </div>
+                <p id="selected-day" class="helper">Select a day from the schedule table first.</p>
+                <form id="content-form" class="stack">
+                    <label for="progress-prompt">Current progress / what the learner needs now</label>
+                    <textarea id="progress-prompt" rows="5" placeholder="Example: I understood joins, but I am struggling with nested subqueries. Make today's lesson practical and beginner-friendly."></textarea>
+                    <label for="content-style">Lesson style</label>
+                    <select id="content-style" name="content_style">
+                        <option value="Detailed and practical">Detailed and practical</option>
+                        <option value="Funny and beginner-friendly">Funny and beginner-friendly</option>
+                        <option value="Interview-focused">Interview-focused</option>
+                        <option value="Project-based">Project-based</option>
+                        <option value="Concise revision notes">Concise revision notes</option>
+                        <option value="Visual analogy-heavy">Visual analogy-heavy</option>
+                    </select>
+                    <button id="generate-content" class="button primary" type="submit" disabled>Generate Lesson for Selected Day</button>
+                </form>
+                <div class="lesson-preview">
+                    <h3>Lesson Preview</h3>
+                    <div id="lesson-content" class="lesson-content empty-state">No lesson generated yet.</div>
+                </div>
+            </section>
+        </section>
+    </main>
+
+    <a class="floating-planner-bubble" href="/planner-tools" aria-label="Open Study Tools and Weekly Calendar">
+        <span class="floating-bubble-core" aria-hidden="true">
+            <span class="bubble-constellation"></span>
+            <span class="bubble-monogram">SG</span>
+        </span>
+        <span class="floating-bubble-label">Planner Tools</span>
+    </a>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
